@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 @click.group(chain=False, invoke_without_command=True)
 @click.pass_context
 def handler(ctx:click.core.Context):
+    if ctx.obj is None:
+        ctx.obj = {}
     ctx.obj['settings'] = {
         'credentials': Credentials()
     } 
@@ -26,8 +28,8 @@ def handler(ctx:click.core.Context):
 @click.option('--limit', '-l', default=32)
 @click.pass_context
 def map_reduce(ctx:click.core.Context, path2file:str, model:str, context_size:int, limit:int):
-    credientials:Credentials = ctx.obj['settings']['credentials']
-    llm = OpenAI(api_key=credientials.openai_api_key)
+    credentials:Credentials = ctx.obj['settings']['credentials']
+    llm = OpenAI(api_key=credentials.openai_api_key)
 
     pdf_reader = PdfReader(stream=path2file)
     pages:List[str] = [ page.extract_text() for page in pdf_reader.pages ]
